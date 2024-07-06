@@ -2,7 +2,6 @@ package com.bdris.etcdtranslator.controller;
 
 import com.bdris.etcdtranslator.AppCmdRunner;
 import com.bdris.etcdtranslator.service.EtcdClient;
-import com.bdris.etcdtranslator.service.impl.EtcdClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class TranslatorController {
     private AppCmdRunner appCmdRunner;
 
     @Autowired
-    private EtcdClientImpl etcdClient;
+    private EtcdClient etcdClient;
 
     @GetMapping("/translate/{key}")
     public String viewProperties(
@@ -28,7 +27,7 @@ public class TranslatorController {
             @RequestParam(name = "args", defaultValue = "") List<String> args
     ) throws Exception {
 
-        log.info("watcher closed: " + etcdClient.watcher.isClosed());
+//        log.info("watcher closed: " + etcdClient.watcher.isClosed());
         return appCmdRunner.test();
     }
 }

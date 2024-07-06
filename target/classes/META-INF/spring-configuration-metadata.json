@@ -10,11 +10,13 @@
     {
       "name": "etcd.server.etcd-long-blocking-thread-pool-task-executor",
       "type": "java.util.concurrent.ExecutorService",
+      "description": "Executor service for long-running blocking etcd tasks.",
       "sourceType": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration"
     },
     {
       "name": "etcd.server.etcd-thread-pool-task-executor",
       "type": "java.util.concurrent.ExecutorService",
+      "description": "Executor service for regular etcd tasks.",
       "sourceType": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration"
     }
   ],

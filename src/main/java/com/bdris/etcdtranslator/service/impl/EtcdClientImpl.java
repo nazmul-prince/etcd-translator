@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class EtcdClientImpl implements EtcdClient {
+final class EtcdClientImpl implements EtcdClient {
     private final Logger log = LoggerFactory.getLogger(EtcdClientImpl.class);
 
     /**
@@ -48,9 +48,23 @@ public class EtcdClientImpl implements EtcdClient {
      * @param taskExecutor                           the executor service for general tasks
      * @param etcdLongBlockingThreadPoolTaskExecutor the executor service for long-running etcd tasks
      */
-    public EtcdClientImpl(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
+    EtcdClientImpl(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
         this.etcdLongBlockingThreadPoolTaskExecutor = etcdLongBlockingThreadPoolTaskExecutor;
+        
+        if(!port.isEmpty())
+            hosts = addPortToHosts(hosts, port);
+        
         this.etcdClient = Client.builder().endpoints(hosts).maxInboundMessageSize(8 * 1024 * 1024).executorService(taskExecutor).build();
+    }
+
+    public EtcdClient create(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
+        return new EtcdClientImpl(hosts,port,taskExecutor,etcdLongBlockingThreadPoolTaskExecutor);
+    }
+
+    private String[] addPortToHosts(String[] hosts, String port) {
+        return Arrays.stream(hosts)
+                .map(host -> host + ":" + port)
+                .toArray(String[]::new);
     }
 
     @Override
