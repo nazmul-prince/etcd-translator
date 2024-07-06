@@ -42,7 +42,7 @@ public class EtcdThreadPoolConfiguration {
 
     @Bean(name = "etcdLongBlockingThreadPoolTaskExecutor")
     public ExecutorService etcdLongBlockingThreadPoolTaskExecutor() {
-        ThreadFactory threadFactory = new EtcdThreadPoolConfiguration.CustomThreadFactory(threadNamePrefix);
+        ThreadFactory threadFactory = new EtcdThreadPoolConfiguration.CustomThreadFactory(blockingThreadNamePrefix);
         return new ThreadPoolExecutor(
                 corePoolSize,
                 maxPoolSize,

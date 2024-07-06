@@ -23,46 +23,141 @@ import java.util.stream.Collectors;
 
 public class EtcdClientImpl implements EtcdClient {
     private final Logger log = LoggerFactory.getLogger(EtcdClientImpl.class);
-    private Client etcdClient;
-    Watch.Watcher watcher;
 
+    /**
+     * Executor service for long-running etcd tasks.
+     */
     private final ExecutorService etcdLongBlockingThreadPoolTaskExecutor;
 
+    /**
+     * Watcher to monitor etcd key changes.
+     */
+    public Watch.Watcher watcher;
+
+    /**
+     * Client to interact with etcd.
+     */
+    private Client etcdClient;
+
+    /**
+     * Constructs an instance of EtcdClientImpl.
+     *
+     * @param hosts                                  the etcd hosts to connect to, you can add the ports in hosts too, for example: http://ip:port,
+     *                                               in that case port won't be concatenated.
+     * @param port                                   the port number for etcd
+     * @param taskExecutor                           the executor service for general tasks
+     * @param etcdLongBlockingThreadPoolTaskExecutor the executor service for long-running etcd tasks
+     */
     public EtcdClientImpl(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
         this.etcdLongBlockingThreadPoolTaskExecutor = etcdLongBlockingThreadPoolTaskExecutor;
-        this.etcdClient = Client.builder().endpoints(hosts).executorService(taskExecutor).build();
+        this.etcdClient = Client.builder().endpoints(hosts).maxInboundMessageSize(8 * 1024 * 1024).executorService(taskExecutor).build();
     }
 
     @Override
-    public String getByKey(String key) {
+    public String getByKey(String key) throws ExecutionException, InterruptedException {
+        Map<String, String> kvPairs = getByKeyAsync(key, false).get();
+        return kvPairs.values()
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Retrieves the key-value pairs associated with the specified key asynchronously.
+     *
+     * @param key      the key whose associated key-value pairs are to be returned
+     * @param isPrefix whether the key is a prefix
+     * @return a {@link CompletableFuture} that will be completed with the key-value pairs
+     */
+    @Override
+    public CompletableFuture<Map<String, String>> getByKeyAsync(String key, boolean isPrefix) {
         GetOption option = GetOption.builder()
-                .isPrefix(false)
+                .isPrefix(isPrefix)
                 .build();
-        List<KeyValue> kvs = get(option, key);
+        return get(option, key).thenApplyAsync(getResponse -> {
+                    List<KeyValue> kvs = getResponse == null ? List.of() : getResponse.getKvs();
 
-        return ( kvs.isEmpty() ? null : kvs.get(0).toString());
+                    return kvs.stream()
+                            .collect(Collectors.toMap(
+                                    keyValue -> keyValue.getKey().toString(),
+                                    keyValue1 -> keyValue1.getValue().toString())
+                            );
+                }, etcdLongBlockingThreadPoolTaskExecutor)
+                .exceptionally(throwable -> {
+                    log.error("Error while getting key " + key + " isPrefix: " + isPrefix, throwable);
+                    return Map.of();
+                });
     }
 
     @Override
-    public Map<String, String> getByKeyPrefix(String key) {
-        GetOption option = GetOption.builder()
+    public CompletableFuture<Map<String, String>> getByKeyPrefixAsync(String key) {
+        return getByKeyAsync(key, true);
+    }
+
+    /**
+     * Retrieves the {@link GetResponse} for the specified key with the given options asynchronously.
+     *
+     * @param option the options to apply when fetching the key
+     * @param key    the key whose associated {@link GetResponse} is to be returned
+     * @return a {@link CompletableFuture} that will be completed with the {@link GetResponse}
+     */
+    private CompletableFuture<GetResponse> get(GetOption option, String key) {
+        KV kvClient = etcdClient.getKVClient();
+
+        ByteSequence keyByteSequence = ByteSequence.from(key.getBytes());
+        return kvClient.get(keyByteSequence, option)
+                .exceptionally(e -> {
+                    log.error("error while getting key with : " + key + " " + e.getMessage());
+                    return null;
+                });
+    }
+
+    @Override
+    public void watchByKeyPrefix(String keyToWatch, Consumer<WatchResponse> consumer) {
+        WatchOption watchOption = WatchOption.builder()
                 .isPrefix(true)
                 .build();
-        List<KeyValue> kvs = get(option, key);
-
-        Map<String, String> keyValues = kvs.stream()
-                .collect(Collectors.toMap(
-                        keyValue -> keyValue.getKey().toString(),
-                        keyValue1 -> keyValue1.getValue().toString())
-                );
-        return keyValues;
+        watch(keyToWatch, watchOption, consumer);
     }
 
+    /**
+     * Watches for changes on the specified key with the given options and processes the changes using the provided consumer.
+     *
+     * @param key         the key to watch
+     * @param watchOption the options to apply when watching the key
+     * @param consumer    the consumer to process the watch response
+     */
+    private void watch(String key, WatchOption watchOption, Consumer<WatchResponse> consumer) {
+        Consumer<Throwable> onError = e -> {
+            log.error("error ");
+        };
+
+        Runnable onCompleted = () -> {
+            log.info("Completed");
+        };
+        log.info("getting watcher client");
+        Watch watchClient = etcdClient.getWatchClient();
+        watcher = watchClient.watch(ByteSequence.from(key.getBytes(StandardCharsets.UTF_8)),
+                watchOption,
+                consumer,
+                onError,
+                onCompleted);
+        log.info("started watching");
+    }
+
+    /**
+     * Stops the watcher if it is running.
+     */
     @Override
-    public void watchByKeyPrefix(String keyToWatch) {
-
+    public void stopWatcher() {
+        if (watcher != null) {
+            watcher.close();
+        }
     }
 
+    /**
+     * Demonstrates watching a key and performing an action when the key is updated.
+     */
     @Override
     public void testWatchAndGet() {
         final ByteSequence key = ByteSequence.from("rand".getBytes());
@@ -86,6 +181,9 @@ public class EtcdClientImpl implements EtcdClient {
 
     }
 
+    /**
+     * Demonstrates the execution of a long blocking task asynchronously using the configured executor service.
+     */
     private void executeLongBlockingTasks() {
         CompletableFuture.runAsync(() -> {
 
@@ -97,59 +195,5 @@ public class EtcdClientImpl implements EtcdClient {
 //                        throw new RuntimeException(e);
             }
         }, etcdLongBlockingThreadPoolTaskExecutor);
-    }
-
-    @Override
-    public void watchByKeyPrefix(String keyToWatch, Consumer<WatchResponse> consumer) {
-        WatchOption watchOption = WatchOption.builder()
-                .isPrefix(true)
-                .build();
-        watch(keyToWatch, watchOption, consumer);
-    }
-
-    @Override
-    public void watchByKey(String keyToWatch, Consumer<WatchResponse> consumer) {
-        WatchOption watchOption = WatchOption.builder()
-                .isPrefix(false)
-                .build();
-        watch(keyToWatch, watchOption, consumer);
-    }
-
-    @Override
-    public void stopWatcher() {
-        if(watcher != null) {
-            watcher.close();
-        }
-    }
-
-    private void watch(String key, WatchOption watchOption, Consumer<WatchResponse> consumer) {
-        Watch watchClient = etcdClient.getWatchClient();
-        watcher = watchClient.watch(ByteSequence.from(key.getBytes(StandardCharsets.UTF_8)),
-                watchOption,
-                consumer);
-    }
-
-    private List<KeyValue> get(GetOption option, String key) {
-        List<KeyValue> kvs= new ArrayList<>();
-        KV kvClient = etcdClient.getKVClient();
-
-        byte[] bytes = key.getBytes();
-
-        ByteSequence keyByteSequence = ByteSequence.from(bytes);
-        try {
-            GetResponse response = kvClient.get(keyByteSequence, option)
-                    .exceptionally(e -> {
-                        log.error("error while getting key with : " + key);
-                        return null;
-                    })
-                    .get();
-            kvs = response.getKvs();
-        } catch (InterruptedException e) {
-            log.error("Jetcd interrupted");
-        } catch (ExecutionException e) {
-            log.error("Jetcd execution got problem");
-        }
-
-        return kvs;
     }
 }

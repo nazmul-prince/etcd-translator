@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "etcd.server",
+      "type": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration",
+      "sourceType": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "etcd.server.etcd-long-blocking-thread-pool-task-executor",
+      "type": "java.util.concurrent.ExecutorService",
+      "sourceType": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration"
+    },
+    {
+      "name": "etcd.server.etcd-thread-pool-task-executor",
+      "type": "java.util.concurrent.ExecutorService",
+      "sourceType": "com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration"
+    }
+  ],
+  "hints": []
+}

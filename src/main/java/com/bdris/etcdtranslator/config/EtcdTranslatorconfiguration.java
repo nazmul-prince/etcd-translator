@@ -53,13 +53,14 @@ public class EtcdTranslatorconfiguration {
     @Bean
     @ConditionalOnMissingBean(EtcdMessageSource.class)
     public EtcdMessageSource etcdMessageSource() {
-        return new EtcdMessageSource(hosts.toArray(new String[hosts.size()]),
-                port,
+        return new EtcdMessageSource(
                 etcdClient(),
                 baseDir,
                 localesKey,
                 baseDirTowatch,
-                etcdLongBlockingThreadPoolTaskExecutor);
+                etcdLongBlockingThreadPoolTaskExecutor,
+                true
+        );
     }
 
     @Bean
