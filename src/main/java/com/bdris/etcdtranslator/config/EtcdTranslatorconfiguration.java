@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
  * Configuration class for setting up etcd client and message source beans.
  */
 @Configuration
-@ConfigurationProperties(prefix = "etcd.server")
+//@ConfigurationProperties(prefix = "etcd.server")
 public class EtcdTranslatorconfiguration {
 
     /**
