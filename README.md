@@ -1,8 +1,8 @@
-# Etcd Translator Library
+# Etcd Translator Library For Spring Boot
 
 ## Overview
 
-The Etcd Translator Library provides a convenient way to manage and fetch translation resources from an etcd key-value store. This library includes configuration for setting up connection pools and handling asynchronous or synchronous retrieval of translation data.
+The Etcd Translator Library for spring boot provides a convenient way to manage and fetch translation resources from an etcd key-value store. This library includes configuration for setting up connection pools and handling asynchronous or synchronous retrieval of translation data.
 
 ## Features
 
