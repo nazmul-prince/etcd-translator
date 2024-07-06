@@ -37,8 +37,10 @@ public class TranslatorController {
 
         log.info("Got request for sending message to: ");
         message1 = etcdMessageSource.getMessage("/messages/bn/bris.greet.hello", null, new Locale("bn"));
-        log.info("/message: " + message1);
+        log.info("/message1: " + message1);
+        message2 = etcdMessageSource.getMessage("/messages/en/bris.greet.hello", new String[]{"111", "222"}, new Locale("en"));
+        log.info("/message2: " + message2);
 //        log.info("watcher closed: " + etcdClient.watcher.isClosed());
-        return message1;
+        return message1 + " : " + message2;
     }
 }

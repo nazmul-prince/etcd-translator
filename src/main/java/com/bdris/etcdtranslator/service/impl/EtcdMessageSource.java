@@ -136,7 +136,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         log.info("Reloading messages with async approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();
-        messagesCache.clear();
+//        messagesCache.clear();
         initiateLoadingMessagesAsync();
     }
 
@@ -144,7 +144,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         log.info("Reloading messages with synch approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();
-        messagesCache.clear();
+//        messagesCache.clear();
         initiateLoadingMessages();
     }
 
@@ -172,8 +172,21 @@ public class EtcdMessageSource extends AbstractMessageSource {
     private void loadMessagesAsync() {
         localeWiseBaseDirs.forEach((locale, dir) -> {
             client.getByKeyAsync(dir, true).whenCompleteAsync((kvPairs, throwable) -> {
-                saveMessagesToCache(kvPairs, locale);
-                log.info("successfully loaded translations for locale: " + locale.getLanguage());
+
+                if(!kvPairs.isEmpty()) {
+                    //first find the correct referenced local set as the key.
+                    final var l = messagesCache.keySet()
+                            .stream()
+                            .filter(cachedLocale -> Objects.equals(locale.getLanguage(), cachedLocale.getLanguage()))
+                            .findFirst()
+                            .orElse(null);
+
+                    if(l != null){
+                        messagesCache.remove(l);
+                    }
+                    saveMessagesToCache(kvPairs, locale);
+                    log.info("successfully loaded translations for locale: " + locale.getLanguage());
+                }
             }, etcdLongBlockingThreadPoolTaskExecutor);
         });
     }

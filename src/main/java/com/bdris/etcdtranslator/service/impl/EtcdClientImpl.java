@@ -98,6 +98,7 @@ final class EtcdClientImpl implements EtcdClient {
                             );
                 }, etcdLongBlockingThreadPoolTaskExecutor)
                 .exceptionally(throwable -> {
+                    throwable.printStackTrace();
                     log.error("Error while getting key " + key + " isPrefix: " + isPrefix, throwable);
                     return Map.of();
                 });
@@ -118,10 +119,10 @@ final class EtcdClientImpl implements EtcdClient {
     private CompletableFuture<GetResponse> get(GetOption option, String key) {
         KV kvClient = etcdClient.getKVClient();
 
-        ByteSequence keyByteSequence = ByteSequence.from(key.getBytes());
+        ByteSequence keyByteSequence = ByteSequence.from(key.getBytes(StandardCharsets.UTF_8));
         return kvClient.get(keyByteSequence, option)
                 .exceptionally(e -> {
-                    log.error("error while getting key with : " + key + " " + e.getMessage());
+                    log.error("error while getting key with : " + key + " " + e.getMessage(), e);
                     return null;
                 });
     }
