@@ -1,6 +1,6 @@
-package com.bdris.etcdtranslator.service.impl;
+package io.etcd.springi18n.service.impl;
 
-import com.bdris.etcdtranslator.service.EtcdClient;
+import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;

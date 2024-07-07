@@ -68,7 +68,7 @@ You dont have to do anything here.
 ### EtcdMessageSource
 
 ```
-import com.bdris.etcdtranslator.service.impl.EtcdMessageSource;
+import impl.service.io.etcd.springi18n.EtcdMessageSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

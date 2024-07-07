@@ -1,4 +1,4 @@
-//package com.bdris.etcdtranslator;
+//package io.etcd.springlocalization;
 //
 //import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;

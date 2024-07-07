@@ -1,6 +1,5 @@
-package com.bdris.etcdtranslator.service;
+package io.etcd.springi18n.service;
 
-import io.etcd.jetcd.Client;
 import io.etcd.jetcd.watch.WatchResponse;
 
 import java.util.Map;

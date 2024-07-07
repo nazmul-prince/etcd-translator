@@ -1,11 +1,10 @@
-package com.bdris.etcdtranslator.config;
+package io.etcd.springi18n.config;
 
-import com.bdris.etcdtranslator.service.EtcdClient;
-import com.bdris.etcdtranslator.service.impl.EtcdClientFactory;
-import com.bdris.etcdtranslator.service.impl.EtcdMessageSource;
+import io.etcd.springi18n.service.EtcdClient;
+import io.etcd.springi18n.service.impl.EtcdClientFactory;
+import io.etcd.springi18n.service.impl.EtcdMessageSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package com.bdris.etcdtranslator;
+package io.etcd.springi18n;
 
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
@@ -7,11 +7,9 @@ import io.etcd.jetcd.kv.GetResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 @Component

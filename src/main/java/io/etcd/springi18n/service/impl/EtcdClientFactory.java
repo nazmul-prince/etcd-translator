@@ -1,8 +1,6 @@
-package com.bdris.etcdtranslator.service.impl;
+package io.etcd.springi18n.service.impl;
 
-import com.bdris.etcdtranslator.service.EtcdClient;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import io.etcd.springi18n.service.EtcdClient;
 
 import java.util.concurrent.ExecutorService;
 

@@ -1,16 +1,13 @@
-package com.bdris.etcdtranslator.controller;
+package io.etcd.springi18n.controller;
 
-import com.bdris.etcdtranslator.AppCmdRunner;
-import com.bdris.etcdtranslator.service.EtcdClient;
-import com.bdris.etcdtranslator.service.impl.EtcdMessageSource;
+import io.etcd.springi18n.AppCmdRunner;
+import io.etcd.springi18n.service.EtcdClient;
+import io.etcd.springi18n.service.impl.EtcdMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,9 +33,9 @@ public class TranslatorController {
         String message2 = "";
 
         log.info("Got request for sending message to: ");
-        message1 = etcdMessageSource.getMessage("/messages/bn/bris.greet.hello", null, new Locale("bn"));
+//        message1 = etcdMessageSource.getMessage("/messages/bn/bris.greet.hello", null, new Locale("bn"));
         log.info("/message1: " + message1);
-        message2 = etcdMessageSource.getMessage("/messages/en/bris.greet.hello", new String[]{"111", "222"}, new Locale("en"));
+        message2 = etcdMessageSource.getMessage("bris.greet.hello", new String[]{"111", "222"}, new Locale("en"));
         log.info("/message2: " + message2);
 //        log.info("watcher closed: " + etcdClient.watcher.isClosed());
         return message1 + " : " + message2;

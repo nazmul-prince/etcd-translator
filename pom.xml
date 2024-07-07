@@ -8,11 +8,11 @@
         <version>3.2.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.bdris</groupId>
-    <artifactId>etcdtranslator</artifactId>
+    <groupId>io.etcd</groupId>
+    <artifactId>springi18n</artifactId>
     <!--    <packaging>jar</packaging>-->
     <version>0.0.1</version>
-    <name>etcdtranslator</name>
+    <name>etcd-spring-i18n</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

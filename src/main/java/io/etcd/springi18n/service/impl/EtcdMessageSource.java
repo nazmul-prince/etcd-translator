@@ -1,13 +1,12 @@
-package com.bdris.etcdtranslator.service.impl;
+package io.etcd.springi18n.service.impl;
 
-import com.bdris.etcdtranslator.service.EtcdClient;
+import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.AbstractMessageSource;
-import org.springframework.lang.Nullable;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -217,7 +216,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
 
     private void loadLocalWiseBaseDirs() {
         availableLocales.forEach(locale -> {
-            String localeBase = baseDir + "/" + locale.getLanguage();
+            String localeBase = baseDir + "/" + locale.getLanguage() + "/";
             localeWiseBaseDirs.put(locale, localeBase);
         });
     }
@@ -240,7 +239,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         kvPairs = kvPairs.entrySet()
                 .stream()
                 .filter(entry -> (!(entry.getValue().isBlank() || Objects.equals("\'\'", entry.getValue()))))
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().replaceFirst(dir, "")));
+                .collect(Collectors.toMap(entry -> entry.getKey().replaceFirst(dir, ""), Map.Entry::getValue));
         messagesCache.put(locale, kvPairs);
     }
 

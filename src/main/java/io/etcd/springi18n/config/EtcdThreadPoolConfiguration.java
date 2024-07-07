@@ -1,4 +1,4 @@
-package com.bdris.etcdtranslator.config;
+package io.etcd.springi18n.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

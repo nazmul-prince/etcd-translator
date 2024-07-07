@@ -1,6 +1,5 @@
-package com.bdris.etcdtranslator;
+package io.etcd.springi18n;
 
-import com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

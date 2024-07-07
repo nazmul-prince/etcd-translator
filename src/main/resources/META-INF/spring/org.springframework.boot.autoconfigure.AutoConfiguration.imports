@@ -1,3 +1,2 @@
-
-com.bdris.etcdtranslator.config.EtcdThreadPoolConfiguration
-com.bdris.etcdtranslator.config.EtcdTranslatorconfiguration
+io.etcd.springi18n.config.EtcdThreadPoolConfiguration
+io.etcd.springi18n.config.EtcdTranslatorconfiguration
