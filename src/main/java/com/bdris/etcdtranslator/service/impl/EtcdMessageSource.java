@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.AbstractMessageSource;
+import org.springframework.lang.Nullable;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -46,6 +47,11 @@ public class EtcdMessageSource extends AbstractMessageSource {
      * Cache for storing translation messages, organized by locale.
      */
     private final Map<Locale, Map<String, String>> messagesCache = new ConcurrentHashMap<>();
+    /**
+     *  Cache to hold already generated MessageFormats per message code.
+     */
+    private final ConcurrentMap<String, Map<Locale, MessageFormat>> cachedMessageFormats =
+            new ConcurrentHashMap<>();
 
     /**
      * Root directory for messages or translations.
@@ -136,6 +142,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         log.info("Reloading messages with async approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();
+        cachedMessageFormats.clear();
 //        messagesCache.clear();
         initiateLoadingMessagesAsync();
     }
@@ -144,6 +151,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         log.info("Reloading messages with synch approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();
+        cachedMessageFormats.clear();
 //        messagesCache.clear();
         initiateLoadingMessages();
     }
@@ -184,7 +192,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
                     if(l != null){
                         messagesCache.remove(l);
                     }
-                    saveMessagesToCache(kvPairs, locale);
+                    processAndSaveMessagesToCache(kvPairs, locale, dir);
                     log.info("successfully loaded translations for locale: " + locale.getLanguage());
                 }
             }, etcdLongBlockingThreadPoolTaskExecutor);
@@ -222,14 +230,17 @@ public class EtcdMessageSource extends AbstractMessageSource {
             } catch (InterruptedException | ExecutionException e) {
                 errorMessageOnGettingKeyValue(dir, true, e);
             }
-            saveMessagesToCache(kvPairs, locale);
+            processAndSaveMessagesToCache(kvPairs, locale, dir);
         });
         log.info("successfully loaded translations");
     }
 
-    private void saveMessagesToCache(Map<String, String> kvPairs, Locale locale) {
+    private void processAndSaveMessagesToCache(Map<String, String> kvPairs, Locale locale, String dir) {
 
-        kvPairs = kvPairs.entrySet().stream().filter(e -> (!(e.getValue().isBlank() || Objects.equals("\'\'", e.getValue())))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        kvPairs = kvPairs.entrySet()
+                .stream()
+                .filter(entry -> (!(entry.getValue().isBlank() || Objects.equals("\'\'", entry.getValue()))))
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().replaceFirst(dir, "")));
         messagesCache.put(locale, kvPairs);
     }
 
@@ -239,7 +250,35 @@ public class EtcdMessageSource extends AbstractMessageSource {
 
         String message = messagesCache.get(messageLocale).get(code);
 
-        return message != null ? new MessageFormat(message, locale) : null;
+        return message != null ? getMessageFormat(code, locale) : null;
+    }
+
+
+    public MessageFormat getMessageFormat(String code, Locale locale) {
+
+        Map<Locale, MessageFormat> localeMap = this.cachedMessageFormats.get(code);
+        if (localeMap != null) {
+            MessageFormat result = localeMap.get(locale);
+            if (result != null) {
+                return result;
+            }
+        }
+
+        Map<String, String> msgMap = messagesCache.get(locale);
+        final var msg = msgMap.get(code);
+        if (msg != null) {
+            if (localeMap == null) {
+                localeMap = new ConcurrentHashMap<>();
+                Map<Locale, MessageFormat> existing = this.cachedMessageFormats.putIfAbsent(code, localeMap);
+                if (existing != null) {
+                    localeMap = existing;
+                }
+            }
+            MessageFormat result = createMessageFormat(msg, locale);
+            localeMap.put(locale, result);
+            return result;
+        }
+        return null;
     }
 
     private void errorMessageOnGettingKeyValue(String key, boolean isPrefix, Exception e) {
