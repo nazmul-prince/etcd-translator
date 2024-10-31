@@ -158,7 +158,8 @@ public class EtcdMessageSource extends AbstractMessageSource {
     private void initiateLoadingMessagesAsync() {
         loadAvailableLocalsAsync().thenRunAsync(() -> loadLocalWiseBaseDirs(), etcdLongBlockingThreadPoolTaskExecutor).whenCompleteAsync((unused, throwable) -> {
             if (throwable == null) {
-                loadMessagesAsync();
+//                loadMessagesAsync();
+                loadMessages();
             }
         }, etcdLongBlockingThreadPoolTaskExecutor);
     }

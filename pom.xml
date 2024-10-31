@@ -11,7 +11,7 @@
     <groupId>io.etcd</groupId>
     <artifactId>springi18n</artifactId>
     <!--    <packaging>jar</packaging>-->
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>etcd-spring-i18n</name>
     <description>Demo project for Spring Boot</description>
 
@@ -54,6 +54,12 @@
             </exclusions>
             <version>0.8.2</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.ibm.etcd</groupId>-->
+<!--            <artifactId>etcd-java</artifactId>-->
+<!--            <version>0.0.24</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
@@ -61,6 +67,15 @@
         </dependency>
 
     </dependencies>
+
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Open spec for ec packages</name>
+            <url>https://maven.pkg.github.com/pentaglobalsltd/penta-maven-repo</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>

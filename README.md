@@ -30,9 +30,9 @@ Add the following dependency to your Maven `pom.xml`:
 ```xml
 
 <dependency>
-    <groupId>com.bdris</groupId>
-    <artifactId>etcd-translator</artifactId>
-    <version>1.0.0</version>
+    <groupId>io.etcd</groupId>
+    <artifactId>springi18n</artifactId>
+    <version>0.0.2</version>
 </dependency>
 ```
 

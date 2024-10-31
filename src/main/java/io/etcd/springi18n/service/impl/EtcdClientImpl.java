@@ -144,7 +144,7 @@ final class EtcdClientImpl implements EtcdClient {
      */
     private void watch(String key, WatchOption watchOption, Consumer<WatchResponse> consumer) {
         Consumer<Throwable> onError = e -> {
-            log.error("error ");
+            log.error("error ", e);
         };
 
         Runnable onCompleted = () -> {
