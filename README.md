@@ -127,7 +127,6 @@ Or you need to add the following dependency:
 
 - greater or equeal Java 11
 - Spring Boot 3.*
--
 
 ## Contributing
 
