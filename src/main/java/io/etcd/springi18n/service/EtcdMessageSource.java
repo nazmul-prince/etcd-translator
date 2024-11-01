@@ -118,7 +118,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
                             || Objects.equals(watchEvent.getEventType(), WatchEvent.EventType.DELETE));
 
             if (anyMatch) {
-                log.info("reloading messages for: " + atomicInteger.getAndIncrement());
+                log.info("reloading messages for");
                 if (loadMessageWithAsyncApproach) {
                     reloadMessagesAsync();
                 } else {

@@ -38,10 +38,6 @@ public class EtcdTranslatorconfiguration {
     @Value("${etcd.server.port:2379}")
     private String port;
     /**
-     * List of directories for messages.
-     */
-    private List<String> dirs = List.of("/messages/bris/bn", "/messages/bris/en");
-    /**
      * Base directory for messages or translations.
      */
     @Value("${etcd.server.baseDir:/messages}")

@@ -48,6 +48,4 @@ public interface EtcdClient {
     void testWatchAndGet();
 
     void stopWatcher();
-
-    EtcdClient create(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor);
 }

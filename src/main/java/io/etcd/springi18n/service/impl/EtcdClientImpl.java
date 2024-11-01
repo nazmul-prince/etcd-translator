@@ -48,7 +48,7 @@ final class EtcdClientImpl implements EtcdClient {
      * @param taskExecutor                           the executor service for general tasks
      * @param etcdLongBlockingThreadPoolTaskExecutor the executor service for long-running etcd tasks
      */
-    EtcdClientImpl(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
+    private EtcdClientImpl(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
         this.etcdLongBlockingThreadPoolTaskExecutor = etcdLongBlockingThreadPoolTaskExecutor;
         
         if(!port.isEmpty())
@@ -57,14 +57,14 @@ final class EtcdClientImpl implements EtcdClient {
         this.etcdClient = Client.builder().endpoints(hosts).maxInboundMessageSize(8 * 1024 * 1024).executorService(taskExecutor).build();
     }
 
-    public EtcdClient create(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
-        return new EtcdClientImpl(hosts,port,taskExecutor,etcdLongBlockingThreadPoolTaskExecutor);
-    }
-
     private String[] addPortToHosts(String[] hosts, String port) {
         return Arrays.stream(hosts)
                 .map(host -> host + ":" + port)
                 .toArray(String[]::new);
+    }
+
+    static public EtcdClient create(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService etcdLongBlockingThreadPoolTaskExecutor) {
+        return new EtcdClientImpl(hosts,port,taskExecutor,etcdLongBlockingThreadPoolTaskExecutor);
     }
 
     @Override
@@ -74,6 +74,11 @@ final class EtcdClientImpl implements EtcdClient {
                 .stream()
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public CompletableFuture<Map<String, String>> getByKeyPrefixAsync(String key) {
+        return getByKeyAsync(key, true);
     }
 
     /**
@@ -102,11 +107,6 @@ final class EtcdClientImpl implements EtcdClient {
                     log.error("Error while getting key " + key + " isPrefix: " + isPrefix, throwable);
                     return Map.of();
                 });
-    }
-
-    @Override
-    public CompletableFuture<Map<String, String>> getByKeyPrefixAsync(String key) {
-        return getByKeyAsync(key, true);
     }
 
     /**
