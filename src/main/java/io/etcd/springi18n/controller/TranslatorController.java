@@ -2,7 +2,7 @@ package io.etcd.springi18n.controller;
 
 import io.etcd.springi18n.AppCmdRunner;
 import io.etcd.springi18n.service.EtcdClient;
-import io.etcd.springi18n.service.impl.EtcdMessageSource;
+import io.etcd.springi18n.service.EtcdMessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

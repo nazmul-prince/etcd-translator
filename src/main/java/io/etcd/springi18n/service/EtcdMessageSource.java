@@ -1,4 +1,4 @@
-package io.etcd.springi18n.service.impl;
+package io.etcd.springi18n.service;
 
 import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.jetcd.watch.WatchEvent;
@@ -47,7 +47,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
      */
     private final Map<Locale, Map<String, String>> messagesCache = new ConcurrentHashMap<>();
     /**
-     *  Cache to hold already generated MessageFormats per message code.
+     * Cache to hold already generated MessageFormats per message code.
      */
     private final ConcurrentMap<String, Map<Locale, MessageFormat>> cachedMessageFormats =
             new ConcurrentHashMap<>();
@@ -71,14 +71,12 @@ public class EtcdMessageSource extends AbstractMessageSource {
      * Default locales string, used if localesKey is not set.
      */
     private final String defaultLocalesStr = "bn,en";
-
+    //for demo purposes
+    AtomicInteger atomicInteger = new AtomicInteger(0);
     /**
      * Flag indicating whether to use an asynchronous approach for loading messages.
      */
     private boolean loadMessageWithAsyncApproach = true;
-
-    //for demo purposes
-    AtomicInteger atomicInteger = new AtomicInteger(0);
 
     /**
      * Constructs an instance of EtcdMessageSource.
@@ -142,7 +140,6 @@ public class EtcdMessageSource extends AbstractMessageSource {
         availableLocales.clear();
         localeWiseBaseDirs.clear();
         cachedMessageFormats.clear();
-//        messagesCache.clear();
         initiateLoadingMessagesAsync();
     }
 
@@ -151,37 +148,30 @@ public class EtcdMessageSource extends AbstractMessageSource {
         availableLocales.clear();
         localeWiseBaseDirs.clear();
         cachedMessageFormats.clear();
-//        messagesCache.clear();
         initiateLoadingMessages();
     }
 
     private void initiateLoadingMessagesAsync() {
-        loadAvailableLocalsAsync().thenRunAsync(() -> loadLocalWiseBaseDirs(), etcdLongBlockingThreadPoolTaskExecutor).whenCompleteAsync((unused, throwable) -> {
-            if (throwable == null) {
-//                loadMessagesAsync();
-                loadMessages();
-            }
-        }, etcdLongBlockingThreadPoolTaskExecutor);
+        loadAvailableLocalsAsync()
+                .thenRunAsync(this::loadLocalWiseBaseDirs, etcdLongBlockingThreadPoolTaskExecutor)
+                .whenCompleteAsync((unused, throwable) -> {
+                    if (throwable == null) {
+                        loadMessagesAsync();
+//                        loadMessages();
+                    }
+                }, etcdLongBlockingThreadPoolTaskExecutor);
     }
-
-    private void initiateLoadingMessages() {
-        loadAvailableLocales();
-        loadLocalWiseBaseDirs();
-        loadMessages();
-    }
-
 
     private CompletableFuture<Void> loadAvailableLocalsAsync() {
-        return client.getByKeyAsync(localesKey, false).thenAcceptAsync(kvPairs -> {
-            loadLocales(kvPairs);
-        }, etcdLongBlockingThreadPoolTaskExecutor);
+        return client.getByKeyAsync(localesKey, false)
+                .thenAcceptAsync(this::loadLocales, etcdLongBlockingThreadPoolTaskExecutor);
     }
 
     private void loadMessagesAsync() {
         localeWiseBaseDirs.forEach((locale, dir) -> {
             client.getByKeyAsync(dir, true).whenCompleteAsync((kvPairs, throwable) -> {
 
-                if(!kvPairs.isEmpty()) {
+                if (!kvPairs.isEmpty()) {
                     //first find the correct referenced local set as the key.
                     final var l = messagesCache.keySet()
                             .stream()
@@ -189,7 +179,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
                             .findFirst()
                             .orElse(null);
 
-                    if(l != null){
+                    if (l != null) {
                         messagesCache.remove(l);
                     }
                     processAndSaveMessagesToCache(kvPairs, locale, dir);
@@ -197,6 +187,12 @@ public class EtcdMessageSource extends AbstractMessageSource {
                 }
             }, etcdLongBlockingThreadPoolTaskExecutor);
         });
+    }
+
+    private void initiateLoadingMessages() {
+        loadAvailableLocales();
+        loadLocalWiseBaseDirs();
+        loadMessages();
     }
 
     private void loadAvailableLocales() {

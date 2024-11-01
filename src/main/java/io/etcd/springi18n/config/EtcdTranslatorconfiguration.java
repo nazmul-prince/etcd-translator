@@ -2,7 +2,7 @@ package io.etcd.springi18n.config;
 
 import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.springi18n.service.impl.EtcdClientFactory;
-import io.etcd.springi18n.service.impl.EtcdMessageSource;
+import io.etcd.springi18n.service.EtcdMessageSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
