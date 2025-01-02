@@ -250,7 +250,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
     }
 
 
-    public MessageFormat getMessageFormat(String code, Locale locale) {
+    private MessageFormat getMessageFormat(String code, Locale locale) {
 
         Map<Locale, MessageFormat> localeMap = this.cachedMessageFormats.get(code);
         if (localeMap != null) {
