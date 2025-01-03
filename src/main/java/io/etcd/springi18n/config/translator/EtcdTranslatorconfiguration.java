@@ -1,6 +1,5 @@
 package io.etcd.springi18n.config.translator;
 
-import io.etcd.springi18n.service.EtcdClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -107,7 +106,7 @@ public class EtcdTranslatorconfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(EtcdClient.class)
-    public EtcdClient etcdClient() {
+    private EtcdClient etcdClient() {
         return EtcdClientFactory.createEtcdClient(
                 hosts.toArray(new String[0]),
                 port,
