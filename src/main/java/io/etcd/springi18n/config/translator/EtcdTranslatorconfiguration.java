@@ -104,8 +104,8 @@ public class EtcdTranslatorconfiguration {
      *
      * @return a new instance of EtcdClient
      */
-    @Bean
-    @ConditionalOnMissingBean(EtcdClient.class)
+//    @Bean
+//    @ConditionalOnMissingBean(EtcdClient.class)
     private EtcdClient etcdClient() {
         return EtcdClientFactory.createEtcdClient(
                 hosts.toArray(new String[0]),

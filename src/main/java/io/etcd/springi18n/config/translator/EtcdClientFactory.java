@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 
 public class EtcdClientFactory {
 
-    public static EtcdClient createEtcdClient(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService longBlockingTaskExecutor) {
+    static EtcdClient createEtcdClient(String[] hosts, String port, ExecutorService taskExecutor, ExecutorService longBlockingTaskExecutor) {
         return EtcdClientImpl.create(hosts, port, taskExecutor, longBlockingTaskExecutor);
     }
 }
