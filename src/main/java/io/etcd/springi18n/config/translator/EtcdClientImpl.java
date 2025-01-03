@@ -1,6 +1,5 @@
-package io.etcd.springi18n.service.impl;
+package io.etcd.springi18n.config.translator;
 
-import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;

@@ -1,6 +1,6 @@
 package io.etcd.springi18n;
 
-import io.etcd.springi18n.service.EtcdMessageSource;
+import io.etcd.springi18n.config.translator.EtcdMessageSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

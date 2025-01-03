@@ -1,4 +1,4 @@
-package io.etcd.springi18n.service;
+package io.etcd.springi18n.config.translator;
 
 import io.etcd.jetcd.watch.WatchResponse;
 
@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-public interface EtcdClient {
+interface EtcdClient {
 
     /**
      * Retrieves the value associated with the specified key.

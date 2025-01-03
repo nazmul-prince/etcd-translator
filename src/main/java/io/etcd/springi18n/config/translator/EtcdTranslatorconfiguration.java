@@ -1,8 +1,6 @@
-package io.etcd.springi18n.config;
+package io.etcd.springi18n.config.translator;
 
 import io.etcd.springi18n.service.EtcdClient;
-import io.etcd.springi18n.service.impl.EtcdClientFactory;
-import io.etcd.springi18n.service.EtcdMessageSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -116,11 +114,5 @@ public class EtcdTranslatorconfiguration {
                 etcdThreadPoolTaskExecutor,
                 etcdLongBlockingThreadPoolTaskExecutor
         );
-//        return new EtcdClientImpl(
-//                hosts.toArray(new String[0]),
-//                port,
-//                etcdThreadPoolTaskExecutor,
-//                etcdLongBlockingThreadPoolTaskExecutor
-//        );
     }
 }

@@ -1,6 +1,4 @@
-package io.etcd.springi18n.service.impl;
-
-import io.etcd.springi18n.service.EtcdClient;
+package io.etcd.springi18n.config.translator;
 
 import java.util.concurrent.ExecutorService;
 

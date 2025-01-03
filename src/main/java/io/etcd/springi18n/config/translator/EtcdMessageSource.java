@@ -1,6 +1,5 @@
-package io.etcd.springi18n.service;
+package io.etcd.springi18n.config.translator;
 
-import io.etcd.springi18n.service.EtcdClient;
 import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import jakarta.annotation.PostConstruct;
@@ -135,7 +134,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         client.stopWatcher();
     }
 
-    public void reloadMessagesAsync() {
+    private void reloadMessagesAsync() {
         log.info("Reloading messages with async approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();
@@ -143,7 +142,7 @@ public class EtcdMessageSource extends AbstractMessageSource {
         initiateLoadingMessagesAsync();
     }
 
-    public void reloadMessages() {
+    private void reloadMessages() {
         log.info("Reloading messages with synch approach will clear all cache first");
         availableLocales.clear();
         localeWiseBaseDirs.clear();

@@ -1,4 +1,4 @@
-package io.etcd.springi18n.config;
+package io.etcd.springi18n.config.pool;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
